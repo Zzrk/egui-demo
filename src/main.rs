@@ -3,7 +3,11 @@
 fn main() -> eframe::Result<()> {
   env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
 
-  let native_options = eframe::NativeOptions::default();
+  let native_options = eframe::NativeOptions {
+    drag_and_drop_support: true,
+    ..Default::default()
+  };
+
   eframe::run_native(
       "egui demo",
       native_options,

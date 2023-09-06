@@ -63,6 +63,44 @@ fn configure_text_styles(ctx: &egui::Context) {
 }
 
 
+// 预览拖拽的文件
+fn preview_files_being_dropped(ctx: &egui::Context) {
+    use egui::*;
+    use std::fmt::Write as _;
+
+    if !ctx.input(|i| i.raw.hovered_files.is_empty()) {
+      // 遮罩层文字
+        let text = ctx.input(|i| {
+            let mut text = "Dropping files:\n".to_owned();
+            for file in &i.raw.hovered_files {
+                if let Some(path) = &file.path {
+                    write!(text, "\n{}", path.display()).ok();
+                } else if !file.mime.is_empty() {
+                    write!(text, "\n{}", file.mime).ok();
+                } else {
+                    text += "\n???";
+                }
+            }
+            text
+        });
+
+        // 遮罩层
+        let painter =
+            ctx.layer_painter(LayerId::new(Order::Foreground, Id::new("file_drop_target")));
+        // 遮罩层尺寸
+        let screen_rect = ctx.screen_rect();
+        painter.rect_filled(screen_rect, 0.0, Color32::from_black_alpha(192));
+        painter.text(
+            screen_rect.center(),
+            Align2::CENTER_CENTER,
+            text,
+            TextStyle::Heading.resolve(&ctx.style()),
+            Color32::WHITE,
+        );
+    }
+}
+
+
 // 内容区
 fn content(ui: &mut egui::Ui) {
     ui.heading("Top Heading");
@@ -70,11 +108,11 @@ fn content(ui: &mut egui::Ui) {
     ui.label(LOREM_IPSUM);
     ui.add_space(15.);
     ui.label(RichText::new("Sub Heading").text_style(heading2()).strong());
-    ui.monospace(LOREM_IPSUM);
-    ui.add_space(15.);
-    ui.label(RichText::new("Context").text_style(heading3()).strong());
-    ui.add_space(5.);
-    ui.label(LOREM_IPSUM);
+    // ui.monospace(LOREM_IPSUM);
+    // ui.add_space(15.);
+    // ui.label(RichText::new("Context").text_style(heading3()).strong());
+    // ui.add_space(5.);
+    // ui.label(LOREM_IPSUM);
     ui.add_space(15.);
 }
 
@@ -86,6 +124,10 @@ pub struct MyApp {
     allowed_to_close: bool,
     // 当前是否打开确认对话框
     show_confirmation_dialog: bool,
+    // 拖拽的文件
+    dropped_files: Vec<egui::DroppedFile>,
+    // 选择的文件路径
+    picked_path: Option<String>
 }
 
 
@@ -110,9 +152,60 @@ impl eframe::App for MyApp {
   fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
       // egui::CentralPanel 用于覆盖屏幕的剩余部分
       egui::CentralPanel::default().show(ctx, |ui| {
-          content(ui);
-          ui.text_edit_multiline(&mut self.text); // 文本编辑器（使用默认文本）
-        });
+        content(ui);
+        ui.text_edit_multiline(&mut self.text); // 文本编辑器（使用默认文本）
+
+        // 展示选择的文件
+        if ui.button("Open file…").clicked() {
+          if let Some(path) = rfd::FileDialog::new().pick_file() {
+              self.picked_path = Some(path.display().to_string());
+          }
+        }
+        if let Some(picked_path) = &self.picked_path {
+            ui.horizontal(|ui| {
+                ui.label("Picked file:");
+                ui.monospace(picked_path);
+            });
+        }
+
+        // 展示拖拽的文件
+        if !self.dropped_files.is_empty() {
+            ui.group(|ui| {
+                ui.label("Dropped files:");
+
+                for file in &self.dropped_files {
+                    let mut info = if let Some(path) = &file.path {
+                        path.display().to_string()
+                    } else if !file.name.is_empty() {
+                        file.name.clone()
+                    } else {
+                        "???".to_owned()
+                    };
+
+                    let mut additional_info = vec![];
+                    if !file.name.is_empty() {
+                        additional_info.push(format!("type: {}", file.name));
+                    }
+                    if let Some(bytes) = &file.bytes {
+                        additional_info.push(format!("{} bytes", bytes.len()));
+                    }
+                    if !additional_info.is_empty() {
+                        info += &format!(" ({})", additional_info.join(", "));
+                    }
+
+                    ui.label(info);
+                }
+            });
+        }
+      });
+
+      preview_files_being_dropped(ctx);
+      // 保存拖拽的文件
+      ctx.input(|i| {
+          if !i.raw.dropped_files.is_empty() {
+              self.dropped_files = i.raw.dropped_files.clone();
+          }
+      });
 
       // 确认对话框
       if self.show_confirmation_dialog {
