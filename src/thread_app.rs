@@ -54,6 +54,7 @@ fn new_worker(
             let mut state = ThreadState::new(thread_nr);
             while let Ok(ctx) = show_rc.recv() {
                 state.show(&ctx);
+                print!("showed");
                 let _ = on_done_tx.send(());
             }
         })
@@ -115,6 +116,7 @@ impl eframe::App for ThreadApp {
         }
 
         for _ in 0..self.threads.len() {
+            // sync_channel 同步通道发送消息是阻塞的, 只有在消息被接收后才解除阻塞
             let _ = self.on_done_rc.recv();
         }
     }

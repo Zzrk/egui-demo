@@ -1,4 +1,4 @@
-use egui::{FontFamily, FontId, RichText, TextStyle};
+use egui::{FontFamily, FontId, Key, RichText, ScrollArea, TextStyle};
 
 // 初始化字体文件
 fn setup_custom_fonts(ctx: &egui::Context) {
@@ -120,7 +120,7 @@ fn content(app: &mut MyApp, ui: &mut egui::Ui) {
     ui.add_space(15.);
 
     // 文本编辑器（使用默认文本）
-    ui.text_edit_multiline(&mut app.text);
+    // ui.text_edit_multiline(&mut app.text);
 }
 
 #[derive(Default)]
@@ -203,6 +203,25 @@ impl eframe::App for MyApp {
                         ui.label(info);
                     }
                 });
+            }
+
+            // 键盘事件
+            ScrollArea::vertical()
+                .auto_shrink([false; 2])
+                .stick_to_bottom(true)
+                .show(ui, |ui| {
+                    ui.label(&self.text);
+                });
+
+            if ctx.input(|i| i.key_pressed(Key::A)) {
+                self.text.push_str("\nPressed");
+            }
+            if ctx.input(|i| i.key_down(Key::A)) {
+                self.text.push_str("\nHeld");
+                ui.ctx().request_repaint(); // make sure we note the holding.
+            }
+            if ctx.input(|i| i.key_released(Key::A)) {
+                self.text.push_str("\nReleased");
             }
         });
 

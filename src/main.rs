@@ -11,6 +11,6 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "egui demo",
         native_options,
-        Box::new(|_| Box::new(egui_demo::ThreadApp::new())),
+        Box::new(|cc| Box::new(egui_demo::MyApp::new(cc))),
     )
 }
