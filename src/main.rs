@@ -5,12 +5,13 @@ fn main() -> eframe::Result<()> {
     egui_demo::start_puffin_server(); // NOTE: you may only want to call this if the users specifies some flag or clicks a button!
     let native_options = eframe::NativeOptions {
         drag_and_drop_support: true,
+        initial_window_size: Some(egui::vec2(400.0, 1000.0)),
         ..Default::default()
     };
 
     eframe::run_native(
         "egui demo",
         native_options,
-        Box::new(|cc| Box::new(egui_demo::MyApp::new(cc))),
+        Box::new(|_cc| Box::new(egui_demo::ImageApp::default())),
     )
 }

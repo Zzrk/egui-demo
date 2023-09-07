@@ -139,10 +139,9 @@ fn content(app: &mut MyApp, ui: &mut egui::Ui) {
     ui.add_space(15.);
 
     // 文本编辑器（使用默认文本）
-    // ui.text_edit_multiline(&mut app.text);
+    ui.text_edit_multiline(&mut app.text);
 }
 
-#[derive(Default)]
 pub struct MyApp {
     name: String,
     age: u32,
@@ -162,10 +161,21 @@ impl MyApp {
         setup_custom_fonts(&cc.egui_ctx);
         configure_text_styles(&cc.egui_ctx);
         Self {
+            ..Default::default()
+        }
+    }
+}
+
+impl Default for MyApp {
+    fn default() -> Self {
+        Self {
             name: "Zzrk".to_owned(),
             age: 18,
             text: "Edit this text field if you want".to_owned(),
-            ..Default::default()
+            allowed_to_close: false,
+            show_confirmation_dialog: false,
+            dropped_files: Vec::new(),
+            picked_path: None,
         }
     }
 }
@@ -243,22 +253,22 @@ impl eframe::App for MyApp {
             //     self.text.push_str("\nReleased");
             // }
 
-
-            ui.separator();
-            let cmd = "cargo install puffin_viewer && puffin_viewer --url 127.0.0.1:8585";
-            ui.label("To connect, run this:");
-            ui.horizontal(|ui| {
-                ui.monospace(cmd);
-                if ui.small_button("📋").clicked() {
-                    ui.output_mut(|o| o.copied_text = cmd.into());
-                }
-            });
-            ui.separator();
-            ui.label("Note that this app runs in 'reactive' mode, so you must interact with the app for new profile events to be sent. Waving the mouse over this window is enough.");
-            if ui.button("Click to sleep a bit. That should be visible as a spike in the profiler view!").clicked() {
-                puffin::profile_scope!("sleep");
-                std::thread::sleep(std::time::Duration::from_millis(50));
-            }
+            // puffin
+            // ui.separator();
+            // let cmd = "cargo install puffin_viewer && puffin_viewer --url 127.0.0.1:8585";
+            // ui.label("To connect, run this:");
+            // ui.horizontal(|ui| {
+            //     ui.monospace(cmd);
+            //     if ui.small_button("📋").clicked() {
+            //         ui.output_mut(|o| o.copied_text = cmd.into());
+            //     }
+            // });
+            // ui.separator();
+            // ui.label("Note that this app runs in 'reactive' mode, so you must interact with the app for new profile events to be sent. Waving the mouse over this window is enough.");
+            // if ui.button("Click to sleep a bit. That should be visible as a spike in the profiler view!").clicked() {
+            //     puffin::profile_scope!("sleep");
+            //     std::thread::sleep(std::time::Duration::from_millis(50));
+            // }
         });
 
         preview_files_being_dropped(ctx);
