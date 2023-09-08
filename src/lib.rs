@@ -7,3 +7,6 @@ pub use thread_app::ThreadApp;
 
 mod image_app;
 pub use image_app::ImageApp;
+
+mod screenshot_app;
+pub use screenshot_app::ScreenshotApp;

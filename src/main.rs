@@ -12,6 +12,6 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "egui demo",
         native_options,
-        Box::new(|_cc| Box::new(egui_demo::ImageApp::default())),
+        Box::new(|_cc| Box::new(egui_demo::ScreenshotApp::default())),
     )
 }
