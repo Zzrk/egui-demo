@@ -9,7 +9,7 @@ fn setup_custom_fonts(ctx: &egui::Context) {
     // .ttf and .otf files supported.
     fonts.font_data.insert(
         "my_font".to_owned(),
-        egui::FontData::from_static(include_bytes!("./fonts/Hack-Regular.ttf")),
+        egui::FontData::from_static(include_bytes!("../assets/fonts/Hack-Regular.ttf")),
     );
 
     // 设置为比例字体的最高优先级

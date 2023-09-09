@@ -5,6 +5,19 @@ use std::thread::JoinHandle;
 
 use eframe::egui;
 
+fn main() -> Result<(), eframe::Error> {
+    env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+    let options = eframe::NativeOptions {
+        initial_window_size: Some(egui::vec2(1024.0, 768.0)),
+        ..Default::default()
+    };
+    eframe::run_native(
+        "My parallel egui App",
+        options,
+        Box::new(|_cc| Box::new(ThreadApp::new())),
+    )
+}
+
 struct ThreadState {
     thread_nr: usize,
     title: String,
@@ -54,7 +67,6 @@ fn new_worker(
             let mut state = ThreadState::new(thread_nr);
             while let Ok(ctx) = show_rc.recv() {
                 state.show(&ctx);
-                print!("showed");
                 let _ = on_done_tx.send(());
             }
         })

@@ -3,7 +3,7 @@
 use eframe::egui;
 
 // eframe::run_native 会阻塞后续窗口的创建
-pub fn main() -> Result<(), eframe::Error> {
+fn main() -> Result<(), eframe::Error> {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
 
     if cfg!(target_os = "macos") {

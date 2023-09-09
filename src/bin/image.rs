@@ -3,6 +3,19 @@
 use eframe::egui;
 use egui_extras::RetainedImage;
 
+fn main() -> Result<(), eframe::Error> {
+    env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+    let options = eframe::NativeOptions {
+        initial_window_size: Some(egui::vec2(400.0, 1000.0)),
+        ..Default::default()
+    };
+    eframe::run_native(
+        "Show an image with eframe/egui",
+        options,
+        Box::new(|_cc| Box::<ImageApp>::default()),
+    )
+}
+
 pub struct ImageApp {
     image: RetainedImage,
     rounding: f32,
@@ -13,7 +26,11 @@ impl Default for ImageApp {
     fn default() -> Self {
         Self {
             // crab image is CC0, found on https://stocksnap.io/search/crab
-            image: RetainedImage::from_image_bytes("crab.png", include_bytes!("crab.png")).unwrap(),
+            image: RetainedImage::from_image_bytes(
+                "crab.png",
+                include_bytes!("../../assets/images/crab.png"),
+            )
+            .unwrap(),
             rounding: 32.0,
             tint: egui::Color32::from_rgb(100, 200, 200),
         }

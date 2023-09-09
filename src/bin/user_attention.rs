@@ -5,7 +5,7 @@ use eframe::{
 
 use std::time::{Duration, SystemTime};
 
-pub fn main() -> eframe::Result<()> {
+fn main() -> eframe::Result<()> {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
     let native_options = NativeOptions {
         initial_window_size: Some(eframe::egui::vec2(400., 200.)),

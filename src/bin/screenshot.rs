@@ -2,6 +2,16 @@
 
 use eframe::egui::{self, ColorImage};
 
+fn main() -> Result<(), eframe::Error> {
+    env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+    let options = eframe::NativeOptions::default();
+    eframe::run_native(
+        "Take screenshots and display with eframe/egui",
+        options,
+        Box::new(|_cc| Box::<ScreenshotApp>::default()),
+    )
+}
+
 #[derive(Default)]
 pub struct ScreenshotApp {
     continuously_take_screenshots: bool,
