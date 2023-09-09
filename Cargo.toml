@@ -21,7 +21,7 @@ serde = { version = "1", features = ["derive"] }
 rfd = "0.11.4"
 puffin = "0.16.0"
 puffin_http = "0.13.0"
-egui_extras = { version = "0.22.0", features = ["image", "log"] }
+egui_extras = { version = "0.22.0", features = ["image", "svg", "log"] }
 image = "0.24.7"
 
 # native:
